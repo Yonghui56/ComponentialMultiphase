@@ -18,7 +18,7 @@
 #endif
 
 #include "lis.h"
-
+#include "time.h"
 namespace MathLib
 {
 
@@ -60,10 +60,11 @@ void LisLinearEquation::setOption(const BaseLib::Options &option)
 void LisLinearEquation::solveEqs(CRSMatrix<double, signed> *A, double *b, double *x)
 {
     long dimension = static_cast<long>(A->getNRows());
-
+	clock_t start, finish;
+	double duration(0.0);
     std::cout << "------------------------------------------------------------------" << std::endl;
     std::cout << "*** LIS solver computation" << std::endl;
-
+	start = clock();
 //    std::cout << "A=" << std::endl;
 //    A->printMat();
 //    std::cout << "b=" << std::endl;
@@ -142,13 +143,15 @@ void LisLinearEquation::solveEqs(CRSMatrix<double, signed> *A, double *b, double
     
     ierr = lis_solve(AA, bb, xx, solver);
     //lis_output(AA, bb, xx, LIS_FMT_MM, "/home/norihiro/work/task/20120814_ogs6test/deformation/matrix1.txt");
-
+	finish = clock();
+	duration = (double)(finish - start) / CLOCKS_PER_SEC;
     int iter = 0;
     double resid = 0.0;
     ierr = lis_solver_get_iters(solver, &iter);
     ierr = lis_solver_get_residualnorm(solver, &resid);
     printf("\t iteration: %d/%ld\n", iter, _option.ls_max_iterations);
     printf("\t residuals: %e\n", resid);
+	printf("\t Linearsolvetime: %e\n", duration);
     //    lis_vector_print(xx);
     //    lis_vector_print(bb);
 

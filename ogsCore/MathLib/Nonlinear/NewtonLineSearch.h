@@ -43,13 +43,18 @@ namespace MathLib
         template<class F_RESIDUALS, class F_DX, class T_VALUE, class T_CONVERGENCE, class T_PREPOST>
         int solve(F_RESIDUALS &f_residuals, F_DX &f_dx, const T_VALUE &x0, T_VALUE &x_pre, T_VALUE &x_new, T_VALUE &r, T_VALUE &dx, size_t max_itr_count = 100, T_CONVERGENCE* convergence = NULL, T_PREPOST* pre_post = NULL)
         {
-            std::size_t j(0); 
+			std::fstream file("myfile.txt", std::ios::app);//record the residual assembly time
+			std::fstream file2("myfile2.txt", std::ios::app);//record the jacobian assembly time
+			std::size_t j(0); 
 			std::size_t n_nodes(0);
 			n_nodes = x0.size() / 2;
             double d_norm(9999999.9), d1_norm(9999999.9);
 			double C_h(1.53e-8);
             const double damping_factor(1.0); 
             T_CONVERGENCE _default_convergence;
+			clock_t start, finish,start1,finish1;
+			double duration(0.0);
+			double duration1(0.0);
             if (convergence == NULL) convergence = &_default_convergence;
             r = .0;
             x_new = x0;
@@ -62,7 +67,10 @@ namespace MathLib
 
             bool converged = false;
             size_t itr_cnt = 0;
+			start = clock();
             f_residuals.eval(x_pre, r);
+			finish = clock();
+			duration += (double)(finish - start) / CLOCKS_PER_SEC;
             converged = convergence->check(&r, &dx, &x_pre);
             d_norm = convergence->getError();
             if (!converged) {
@@ -71,7 +79,10 @@ namespace MathLib
                     if (pre_post)
                         pre_post->pre_process(dx, x_pre, f_residuals, f_dx);
                     // Jacobian
+					start1 = clock();
                     f_dx.eval(x_pre, r, dx);
+					finish1 = clock();
+					duration1 += (double)(finish1 - start1) / CLOCKS_PER_SEC;
                     // x increment
                     x_new = x_pre; 
 					dx *= damping_factor;
@@ -115,7 +126,10 @@ namespace MathLib
                     if (pre_post)
                         pre_post->post_process(dx, x_new, f_residuals, f_dx);
                     // update residual
+					start = clock();
                     f_residuals.eval(x_new, r);
+					finish = clock();
+					duration += (double)(finish - start) / CLOCKS_PER_SEC;
                     // the line search operations
                     j = 0; 
                     while (j < 10)
@@ -140,7 +154,10 @@ namespace MathLib
                         // post processing
                         if (pre_post)
                             pre_post->post_process(dx, x_new, f_residuals, f_dx);
+						start = clock();
                         f_residuals.eval(x_new, r); 
+						finish = clock();
+						duration += (double)(finish - start) / CLOCKS_PER_SEC;
                         j++;
                     }
 
@@ -149,6 +166,10 @@ namespace MathLib
 
                     // printout(itr_cnt, x_new, r, dx);
 					if (converged){
+						file << duration << std::endl;//output the time for residual assembly
+						file.close();
+						file2 << duration1 << std::endl;//output the time for residual assembly
+						file2.close();
 						break;
 					}      
                 }
@@ -172,7 +193,10 @@ namespace MathLib
 
             if (converged) return 0;
             std::cout << "->*** Warning: the iterations didn't converge." << std::endl;
-			
+			file << duration << std::endl;
+			file.close();
+			file2 << duration1 << std::endl;//output the time for residual assembly
+			file2.close();
             return -1; //not converged
         }
 

@@ -29,7 +29,7 @@ public:
 	/**
 	  * Constructor
 	  */
-	EOS_TotalDensityForm() : AbstractEOS_TotalDensityForm(3)
+	EOS_TotalDensityForm() : AbstractEOS_TotalDensityForm(3)//
     {
     };
 
@@ -55,7 +55,7 @@ public:
 
 		// calculating residual
 		res(0) = Calc_Res_Sg(Sg, rho_L_h, rho_G_h);
-		res(1) = Calc_Res_rho_L_h(Sg, rho_L_h);
+		res(1) = 0.0;// Calc_Res_rho_L_h(Sg, rho_L_h);
 		res(2) = Calc_Res_rho_G_h(Sg, rho_G_h);
 	};
 
@@ -77,9 +77,9 @@ public:
 		PG = getPG(Sg);
 		double PG_h = Function_PG_h(PG);
 		double F1 = Sg;
-		double G1 = std::min(C_h*PG_h, X_L) - rho_L_h;
+		double G1 = C_h*PG_h - rho_L_h;// std::min(C_h*PG_h, X_L) - rho_L_h;
 		double F2 = 1 - Sg;
-		double G2 = rho_G_h - std::max(C_v*PG_h, X_L);
+		double G2 = rho_G_h - C_v*PG_h;// std::max(C_v*PG_h, X_L);
 		// evaluate J
 		J.setZero();
 		J(0, 0) = rho_L_h - rho_G_h;//-----dF(1)/dSg
@@ -92,17 +92,9 @@ public:
 			J(1, 2) = 0.0;
 		}
 		else{
-			if (C_h*PG_h <= X_L)
-			{
-				J(1, 0) = C_h*Deriv_dPGH_dPG(Sg)*Deriv_dPGdSg(Sg);
-				J(1, 1) = -1.0;
-				J(1, 2) = 0.0;
-			}
-			else{
-				J(1, 0) = 0.0;
-				J(1, 1) = -1.0;
-				J(1, 2) = 0.0;
-			}
+			J(1, 0) = C_h*Deriv_dPGH_dPG(Sg)*Deriv_dPGdSg(Sg);
+			J(1, 1) = -1.0;
+			J(1, 2) = 0.0;
 
 		}
 		if (F2 <= G2) {
@@ -111,18 +103,9 @@ public:
 			J(2, 2) = 0.0;
 		}
 		else{
-			if (C_v*PG_h >= X_L)
-			{
-				J(2, 0) = -C_v*Deriv_dPGH_dPG(Sg)*Deriv_dPGdSg(Sg);
-				J(2, 1) = 0.0;
-				J(2, 2) = 1.0;
-			}
-			else{
-				J(2, 0) = 0.0;
-				J(2, 1) = 0.0;
-				J(2, 2) = 1.0;
-			}
-
+			J(2, 0) = -C_v*Deriv_dPGdSg(Sg);
+			J(2, 1) = 0.0;
+			J(2, 2) = 1.0;
 		}
 	};
 	
@@ -489,7 +472,7 @@ public:
 		double dPGH_dPG(0.0);
 		dPGH_dPG = Deriv_dPGH_dPG(Sg);
 		double Alpha(0.0);
-		Alpha = ((C_v - C_h)*Sg + C_h)*dPGH_dPG;
+		Alpha = ((C_v - C_h)*Sg + C_h);// *dPGH_dPG;
 		return Alpha;
 	}
 	virtual double Function_Beta(double Sg)
@@ -499,7 +482,7 @@ public:
 		double Beta(0.0);
 		PG = getPG(Sg);
 		PGh = Function_PG_h(PG);
-		Beta = (C_v - C_h)*PGh;
+		Beta = (C_v - C_h)*PG;// PGh;
 		return Beta;
 	}
 
@@ -515,7 +498,7 @@ public:
 		double Gamma(0.0);
 		Gamma = getweightedFunc(Sg);
 		double dPGdSg(0.0);
-		dPGdSg = dPcdSg*(1 - Gamma) - PC*get_deriv_weight_Func(Sg);
+		dPGdSg = dPcdSg;// *(1 - Gamma) - PC*get_deriv_weight_Func(Sg);
 		//if (Sg < 1e-14)
 			//dPGdSg = 0.0;
 		return dPGdSg;
