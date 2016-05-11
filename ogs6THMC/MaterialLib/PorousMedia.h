@@ -439,7 +439,7 @@ struct PorousMedia : public IMedium
 				P_c = ((Sg / (1 - S_lr))*P_entry_Brook / Lambda_Brook) + P_entry_Brook;
 				//Sg = 1 - (S_lr + (1 - S_lr - S_gr)*pow(P_entry_Brook / P_c, -Lambda_Brook));
 			}
-			else if (Sg>S_lr)
+			else if (Sg>1-S_lr)
 			{
 				P_c = pow(4, 1 + Lambda_Brook)*P_entry_Brook*((1 / pow(4, Lambda_Brook)) - (1 - Sg - S_lr) / (1 - S_lr)) / Lambda_Brook + 4 * P_entry_Brook;
 			}
@@ -485,7 +485,7 @@ struct PorousMedia : public IMedium
 				dPcdSg = P_entry_Brook / Lambda_Brook / (1 - S_lr);// ((Sg / 1 - S_lr)*P_entry_Brook / Lambda_Brook) + P_entry_Brook;
 				//Sg = 1 - (S_lr + (1 - S_lr - S_gr)*pow(P_entry_Brook / P_c, -Lambda_Brook));
 			}
-			else if (Sg>S_lr)
+			else if (Sg>1-S_lr)
 			{
 				dPcdSg = pow(4, 1 + Lambda_Brook)*P_entry_Brook / Lambda_Brook / (1 - S_lr);
 			}
