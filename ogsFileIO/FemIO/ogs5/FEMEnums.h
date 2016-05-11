@@ -70,6 +70,7 @@ enum ProcessType
 	CMP_TotalDensityForm,                  //!< COMPONENT BASED MULTIPHASE FLOW WITH MEAN PRESSURE AND TOTAL MASS DENSITY AS PRIMARY VARIABLE
 	CMP_GlobalComplementaryForm,                  //!< COMPONENT BASED MULTIPHASE FLOW WITH liquid phase pressure, light component molar fraction and saturation as primary variable
 	CMP_CapPresFormular,                  //!<COMPONENT BASED MULTIPHASE FLOW WITH LIQUID PHASE PRESSURE AND CAPILLARY PRESSURE AS PRIMARY VARIABLE>
+	CMP_hetero_PCPGForm,				  //!<COMPONENT BASED MULTIPHASE FLOW WITH CAPILLARY PRESSURE AND GAS PHASEPRESSURE AS PRIMARY VARIABLE>
 	// make sure that this is always the last entry (important for iterating over the enum entries)!
     PROCESS_END
 };

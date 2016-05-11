@@ -45,6 +45,7 @@ namespace MathLib
         {
 			std::fstream file("myfile.txt", std::ios::app);//record the residual assembly time
 			std::fstream file2("myfile2.txt", std::ios::app);//record the jacobian assembly time
+			std::fstream file_res("x_new.txt", std::ios::app);//record the jacobian assembly time
 			std::size_t j(0); 
 			std::size_t n_nodes(0);
 			n_nodes = x0.size() / 2;
@@ -69,6 +70,10 @@ namespace MathLib
             size_t itr_cnt = 0;
 			start = clock();
             f_residuals.eval(x_pre, r);
+			/*for (int ii = 0; ii < r.size(); ii++){
+				file_res << r[ii] << std::endl;
+			}
+			file_res.close();*/
 			finish = clock();
 			duration += (double)(finish - start) / CLOCKS_PER_SEC;
             converged = convergence->check(&r, &dx, &x_pre);
@@ -87,7 +92,11 @@ namespace MathLib
                     x_new = x_pre; 
 					dx *= damping_factor;
                     x_new -= dx;
-
+					INFO("write x_new into file");
+					for (int ii = 0; ii < x_new.size(); ii++){
+						file_res << x_new[ii] << std::endl;
+					}
+					file_res.close();
 					std::size_t m_flag = 1;
 					///modified newton regarding phase appearance
 					///detect the phase change zone

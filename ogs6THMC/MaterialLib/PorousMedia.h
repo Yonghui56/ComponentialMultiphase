@@ -320,6 +320,7 @@ struct PorousMedia : public IMedium
 		
 		double Sg = 0.0;
 		double m = 0.0;
+		double PC_bar;
 		switch (capp_sat_model)
 		{
 		case 4:// index 4 stands for the van Genuchten Model
@@ -332,20 +333,25 @@ struct PorousMedia : public IMedium
 				Sg = 0.0;//just for test
 			break;
 		case 6: // index 6 stands for the Brooks Corey Model
-			if (P_c<P_entry_Brook)
+			/*if (P_c<P_entry_Brook)
 			{
-				Sg = (P_c - P_entry_Brook)*Lambda_Brook / P_entry_Brook;
+				Sg = (1 - S_lr - S_gr)* (P_c - P_entry_Brook)*Lambda_Brook / P_entry_Brook;
 				//Sg = 1 - (S_lr + (1 - S_lr - S_gr)*pow(P_entry_Brook / P_c, Lambda_Brook));
 			}
 			else if (P_c > 4 * P_entry_Brook)
 			{
-				Sg = 1 - 1 / pow(4, Lambda_Brook) + Lambda_Brook*(P_c - 4 * P_entry_Brook) / P_entry_Brook / pow(4, 1 + Lambda_Brook);
+				Sg = 1 - (S_lr + (1 - S_lr - S_gr)*( 1 / pow(4, Lambda_Brook) + Lambda_Brook*(P_c - 4 * P_entry_Brook) / P_entry_Brook / pow(4, 1 + Lambda_Brook)));
 			}
 
 			else
 			{
 				Sg = 1 - (S_lr + (1 - S_lr - S_gr)*pow(P_entry_Brook / P_c, Lambda_Brook));// 1 - pow(P_entry_Brook / P_c, Lambda_Brook);
-			}
+			}*/
+			PC_bar = getPc_bySat(0.0);
+			if (P_c <= PC_bar)
+				Sg = 0.0;
+			else
+				Sg = 1 - (S_lr + (1 - S_lr - S_gr)*pow(P_entry_Brook / P_c, Lambda_Brook));
 			break;
 		default:
 			ERR("Error in getSat_byPC: No valid capillary pressure vs saturation model! ");
@@ -361,6 +367,8 @@ struct PorousMedia : public IMedium
 	{
 		double dPC(0.0);
 		double m = 0.0;
+		//double eps = 1e-6;
+		//double dPC_test;
 		switch (capp_sat_model)
 		{
 		case 4:
@@ -372,21 +380,24 @@ struct PorousMedia : public IMedium
 			}
 			break;
 		case 6:
+			
+			//dPC_test = (getSat_byPC(P_c + eps) - getSat_byPC(P_c - eps)) / 2 / eps;
 			//dPC = (1 - S_lr - S_gr)*Lambda_Brook*pow(P_entry_Brook, Lambda_Brook)*pow(P_c, -Lambda_Brook - 1);
 			if (P_c <= P_entry_Brook)
 			{
-				dPC = Lambda_Brook / P_entry_Brook;
+				dPC = (1 - S_lr - S_gr)*Lambda_Brook / P_entry_Brook;
 				//Sg = 1 - (S_lr + (1 - S_lr - S_gr)*pow(P_entry_Brook / P_c, -Lambda_Brook));
 			}
 			else if (P_c > 4 * P_entry_Brook)
 			{
-				dPC = Lambda_Brook / P_entry_Brook / pow(4, 1 + Lambda_Brook);
+				dPC = (1 - S_lr - S_gr)*Lambda_Brook / P_entry_Brook / pow(4, 1 + Lambda_Brook);///!!!!!error
 			}
 			else
 			{
 				dPC = (1 - S_lr - S_gr)* Lambda_Brook*pow(P_entry_Brook, Lambda_Brook)*pow(P_c, -Lambda_Brook - 1);
 
 			}
+			
 			break;
 		default:
 			ERR("Error in get_diriv_PC: No valid inverse capillary pressure vs saturation model! ");

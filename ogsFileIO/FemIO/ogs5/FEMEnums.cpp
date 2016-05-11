@@ -77,6 +77,9 @@ ProcessType convertProcessType ( const std::string& pcs_type_string )
 		return CMP_GlobalComplementaryForm;
 	if (pcs_type_string.compare("CMP_CapPresFormular") == 0)
 		return CMP_CapPresFormular;
+	if (pcs_type_string.compare("CMP_hetero_PCPGForm") == 0)
+		return CMP_hetero_PCPGForm;
+
     //else
         //std::cout << "WARNING in convertProcessType: process type #" << pcs_type_string <<
         //"# unknown" << std::endl;
@@ -139,7 +142,9 @@ std::string convertProcessTypeToString ( ProcessType pcs_type )
 		return "CMP_GlobalComplementaryForm";
 	if (pcs_type == CMP_CapPresFormular)
 		return "CMP_CapPresFormular";
-	if (pcs_type ==   NO_PCS)
+	if (pcs_type == CMP_hetero_PCPGForm)
+		return "CMP_hetero_PCPGForm";
+	if (pcs_type == NO_PCS)
         return "NO_PCS";
 
     return "INVALID_PROCESS";

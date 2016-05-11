@@ -29,3 +29,4 @@ OGS_ADD_PROCESS_SYS_SOLVER(CMP_CapPresFormular, FunctionCMP_CapPresFormular, Dis
 OGS_ADD_PROCESS_SYS_SOLVER(CMP_PressureForm, FunctionCMP_PressureForm, DiscreteLib::DiscreteSystem, MathLib::LisLinearEquation);//MathLib::EigenDenseLinearEquation
 OGS_ADD_PROCESS_SYS_SOLVER(CMP_TotalDensityForm, FunctionCMP_TotalDensityForm, DiscreteLib::DiscreteSystem, MathLib::LisLinearEquation);//MathLib::EigenDenseLinearEquation
 OGS_ADD_PROCESS_SYS_SOLVER(CMP_GlobalComplementaryForm, FunctionCMP_GlobalComplementaryForm, DiscreteLib::DiscreteSystem, MathLib::LisLinearEquation);//MathLib::EigenDenseLinearEquation
+OGS_ADD_PROCESS_SYS_SOLVER(CMP_hetero_PCPGForm, FunctionCMP_hetero_PCPGForm, DiscreteLib::DiscreteSystem, MathLib::LisLinearEquation);//MathLib::EigenDenseLinearEquation

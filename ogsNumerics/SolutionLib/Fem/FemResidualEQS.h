@@ -13,6 +13,7 @@
 #pragma once
 
 #include <vector>
+#include <fstream>
 
 #include "DiscreteLib/Core/IDiscreteSystem.h"
 #include "DiscreteLib/Utils/Tools.h"
@@ -112,6 +113,10 @@ void TemplateTransientResidualFEMFunction<T1,T2>::eval(const SolutionVector &u_n
     r = .0;
     r.construct(*_dofManager, assembler);
 
+	/*std::fstream file_res_nobc("res_nobc.txt", std::ios::app);//record the jacobian assembly time
+	for (int ii = 0; ii < r.size(); ii++){
+		file_res_nobc << r[ii] << std::endl;
+	}*/
 
     // add source/sink term (i.e. RHS in linear equation)
     if (_st!=0) {
