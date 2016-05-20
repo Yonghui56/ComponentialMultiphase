@@ -298,6 +298,9 @@ public:
 	MyIntegrationPointFunctionVector* get_dPc_dSg(void) { return _dPcdSg; };
 
 	MyIntegrationPointFunctionVector* get_Func_C(void)  { return _Func_C; };
+
+	MyIntegrationPointFunctionVector* get_deriv_Sg_dX(void)  { return _dSgdX; };
+	MyIntegrationPointFunctionVector* get_deriv_Sg_dP(void)  { return _dSgdP; };
 	/**
 	* return the matrix of derivative of secondary variable based on P and X
 	*/
@@ -403,7 +406,8 @@ private:
 	MyIntegrationPointFunctionVector* _dPGh_dPg;
 	MyIntegrationPointFunctionVector* _dPcdSg;//
 	MyIntegrationPointFunctionVector* _Func_C;//
-
+	MyIntegrationPointFunctionVector* _dSgdX;
+	MyIntegrationPointFunctionVector* _dSgdP;
 	/**
 	* store the local matrix M and K 
 	*/

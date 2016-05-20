@@ -117,17 +117,25 @@ bool FunctionCMP_TotalDensityForm<T1, T2>::initialize(const BaseLib::Options &op
 	_rho_G_h->initialize(dis);
 	_rho_G_w = new  MyIntegrationPointFunctionVector();
 	_rho_G_w->initialize(dis);
+	_dSgdP = new  MyIntegrationPointFunctionVector();
+	_dSgdP->initialize(dis);
+	_dSgdX = new  MyIntegrationPointFunctionVector();
+	_dSgdX->initialize(dis);
 	MathLib::LocalVector tmp = MathLib::LocalVector::Zero(1);
 	for (size_t ele_id = 0; ele_id < n_ele; ele_id++)
 	{
-		_S->setNumberOfIntegationPoints(ele_id, 4);	
-		_PL->setNumberOfIntegationPoints(ele_id, 4);
-		_PG->setNumberOfIntegationPoints(ele_id, 4);
-		_PC->setNumberOfIntegationPoints(ele_id, 4);
-		_rho_G_h->setNumberOfIntegationPoints(ele_id, 4);
-		_rho_G_w->setNumberOfIntegationPoints(ele_id, 4);
-		_rho_L_h->setNumberOfIntegationPoints(ele_id, 4);
-		for (size_t jj = 0; jj < 4; jj++)
+		MeshLib::IElement *e = msh->getElement(ele_id);
+		const std::size_t node_ele = e->getNumberOfNodes();//
+		_S->setNumberOfIntegationPoints(ele_id, node_ele);
+		_PL->setNumberOfIntegationPoints(ele_id, node_ele);
+		_PG->setNumberOfIntegationPoints(ele_id, node_ele);
+		_PC->setNumberOfIntegationPoints(ele_id, node_ele);
+		_rho_G_h->setNumberOfIntegationPoints(ele_id, node_ele);
+		_rho_G_w->setNumberOfIntegationPoints(ele_id, node_ele);
+		_rho_L_h->setNumberOfIntegationPoints(ele_id, node_ele);
+		_dSgdP->setNumberOfIntegationPoints(ele_id, node_ele);
+		_dSgdX->setNumberOfIntegationPoints(ele_id, node_ele);
+		for (size_t jj = 0; jj < node_ele; jj++)
 		{
 			_S->setIntegrationPointValue(ele_id, jj, tmp);
 			_PL->setIntegrationPointValue(ele_id, jj, tmp);
@@ -136,6 +144,8 @@ bool FunctionCMP_TotalDensityForm<T1, T2>::initialize(const BaseLib::Options &op
 			_rho_G_h->setIntegrationPointValue(ele_id, jj, tmp);
 			_rho_L_h->setIntegrationPointValue(ele_id, jj, tmp);
 			_rho_G_w->setIntegrationPointValue(ele_id, jj, tmp);
+			_dSgdP->setIntegrationPointValue(ele_id, jj, tmp);
+			_dSgdX->setIntegrationPointValue(ele_id, jj, tmp);
 		}
 	}
 	
@@ -248,6 +258,11 @@ bool FunctionCMP_TotalDensityForm<T1, T2>::initialize(const BaseLib::Options &op
 
 	OutputVariableInfo var_Sec_7(this->getOutputParameterName(8), _msh_id, OutputVariableInfo::Element, OutputVariableInfo::Real, 1, _rho_G_w);
 	femData->outController.setOutput(var_Sec_7.name, var_Sec_7);
+
+	OutputVariableInfo var_Sec_8("Deriv_Sat_by_X", _msh_id, OutputVariableInfo::Element, OutputVariableInfo::Real, 1, _dSgdX);
+	femData->outController.setOutput(var_Sec_8.name, var_Sec_8);
+	OutputVariableInfo var_Sec_9("Deriv_Sat_by_P", _msh_id, OutputVariableInfo::Element, OutputVariableInfo::Real, 1, _dSgdP);
+	femData->outController.setOutput(var_Sec_9.name, var_Sec_9);
 	return true;
 }
 
@@ -311,6 +326,11 @@ void FunctionCMP_TotalDensityForm<T1, T2>::output(const NumLib::TimeStep &/*time
 	OutputVariableInfo var_Sec_7("Mass_Density_G_W", _msh_id, OutputVariableInfo::Element, OutputVariableInfo::Real, 1, _rho_G_w);
 	femData->outController.setOutput(var_Sec_7.name, var_Sec_7);
 
+	OutputVariableInfo var_Sec_8("Deriv_Sat_by_X", _msh_id, OutputVariableInfo::Element, OutputVariableInfo::Real, 1, _dSgdX);
+	femData->outController.setOutput(var_Sec_8.name, var_Sec_8);
+
+	OutputVariableInfo var_Sec_9("Deriv_Sat_by_P", _msh_id, OutputVariableInfo::Element, OutputVariableInfo::Real, 1, _dSgdP);
+	femData->outController.setOutput(var_Sec_9.name, var_Sec_9);
 }
 
 

@@ -53,7 +53,7 @@ public:
 	/**
 	  * TODO: describe the parameter
 	  */
-	const double Iter_tol=200;
+	const double Iter_tol=100;
 
 	/**
 	  * TODO: describe the parameter
