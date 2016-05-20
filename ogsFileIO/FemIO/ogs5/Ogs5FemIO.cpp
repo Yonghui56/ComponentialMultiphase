@@ -102,6 +102,13 @@ bool Ogs5FemIO::read(const std::string &proj_path, Ogs5FemData &ogs5data)
 			pcs->primary_variable_name.push_back("MOLAR_FRACTION");
 			pcs->primary_variable_name.push_back("SATURATION");
 			break;
+		case FiniteElement::CMP_Flash2PForm:
+			pcs->primary_variable_name.push_back("PRESSURE");
+			pcs->primary_variable_name.push_back("TOTAL_MOLAR_FRACTION_1");
+			pcs->primary_variable_name.push_back("TOTAL_MOLAR_FRACTION_2");
+			pcs->primary_variable_name.push_back("TOTAL_MOLAR_FRACTION_3");
+			pcs->primary_variable_name.push_back("TOTAL_MOLAR_FRACTION_4");
+			break;
 		default:
 		    break;
         }

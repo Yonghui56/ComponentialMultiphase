@@ -32,6 +32,7 @@
 #include "FemCompMultiPhaseToTalMassDensityForm/FunctionCMP_TotalDensityForm.h"
 #include "FemCompMultiPhaseGlobalComplementary/FunctionCMP_GlobalComplementaryForm.h"
 #include "FemCompMultiPhaseCapPresFormular/FunctionCMP_CapPresFormular.h"
+#include "FemFlash2PForm/FunctionCMP_Flash2PForm.h"
 #include "FemDeformationTotalForm/Displacement.h"
 #include "FemDeformationTotalForm/ElementStressStrain.h"
 #include "FemDeformationTotalForm/NodalStressStrain.h"

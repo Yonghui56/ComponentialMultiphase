@@ -69,6 +69,8 @@ ProcessType convertProcessType ( const std::string& pcs_type_string )
         return PTC_FLOW;
 	if (pcs_type_string.compare("CMP_2P2C") == 0)
 		return CMP_2P2C;
+	if (pcs_type_string.compare("CMP_Flash2PForm") == 0)
+		return CMP_Flash2PForm;
 	if (pcs_type_string.compare("CMP_PressureForm") == 0)
 		return CMP_PressureForm;
 	if (pcs_type_string.compare("CMP_TotalDensityForm") == 0)
@@ -131,6 +133,8 @@ std::string convertProcessTypeToString ( ProcessType pcs_type )
         return "PTC_FLOW";
 	if (pcs_type == CMP_2P2C)
 		return "CMP_2P2C";
+	if (pcs_type == CMP_Flash2PForm)
+		return "CMP_Flash2PForm";
 	if (pcs_type == CMP_PressureForm)
 		return "CMP_PressureForm";
 	if (pcs_type == CMP_TotalDensityForm)

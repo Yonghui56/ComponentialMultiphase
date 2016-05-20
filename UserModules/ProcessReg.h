@@ -25,6 +25,7 @@ OGS_ADD_PROCESS_SYS_SOLVER(INCREMENTAL_DEFORMATION, FunctionIncrementalDisplacem
 OGS_ADD_PROCESS_SYS_SOLVER(RICHARDS_FLOW, FunctionRichards, DiscreteLib::DiscreteSystem, MathLib::LisLinearEquation);
 /* this following process is component based multphase flow */
 OGS_ADD_PROCESS_SYS_SOLVER(CMP_2P2C, FunctionCMP_2P2C, DiscreteLib::DiscreteSystem, MathLib::LisLinearEquation);//
+OGS_ADD_PROCESS_SYS_SOLVER(CMP_Flash2PForm, FunctionCMP_Flash2PForm, DiscreteLib::DiscreteSystem, MathLib::LisLinearEquation);
 OGS_ADD_PROCESS_SYS_SOLVER(CMP_CapPresFormular, FunctionCMP_CapPresFormular, DiscreteLib::DiscreteSystem, MathLib::LisLinearEquation);//
 OGS_ADD_PROCESS_SYS_SOLVER(CMP_PressureForm, FunctionCMP_PressureForm, DiscreteLib::DiscreteSystem, MathLib::LisLinearEquation);//MathLib::EigenDenseLinearEquation
 OGS_ADD_PROCESS_SYS_SOLVER(CMP_TotalDensityForm, FunctionCMP_TotalDensityForm, DiscreteLib::DiscreteSystem, MathLib::LisLinearEquation);//MathLib::EigenDenseLinearEquation
