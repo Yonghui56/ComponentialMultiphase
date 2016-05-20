@@ -29,7 +29,7 @@ public:
 	/**
 	  * Constructor
 	  */
-	EOS_TotalDensityForm() : AbstractEOS_TotalDensityForm(3)
+	EOS_TotalDensityForm() : AbstractEOS_TotalDensityForm(3)//
     {
     };
 
@@ -64,7 +64,7 @@ public:
 	* this function will evaluate the Jacobian matrix,
 	* based on the unknown values given.
 	*/
-	
+	/*
 	virtual void calc_Jacobian(ogsChem::LocalVector & vec_unknowns, ogsChem::LocalMatrix & J)
 	{
 		assert(J.cols() == this->get_n() && J.rows() == this->get_n());
@@ -77,9 +77,9 @@ public:
 		PG = getPG(Sg);
 		double PG_h = Function_PG_h(PG);
 		double F1 = Sg;
-		double G1 = std::min(C_h*PG_h, X_L) - rho_L_h;
+		double G1 = C_h*PG_h - rho_L_h;// std::min(C_h*PG_h, X_L) - rho_L_h;
 		double F2 = 1 - Sg;
-		double G2 = rho_G_h - std::max(C_v*PG_h, X_L);
+		double G2 = rho_G_h - C_v*PG_h;// std::max(C_v*PG_h, X_L);
 		// evaluate J
 		J.setZero();
 		J(0, 0) = rho_L_h - rho_G_h;//-----dF(1)/dSg
@@ -92,17 +92,9 @@ public:
 			J(1, 2) = 0.0;
 		}
 		else{
-			if (C_h*PG_h <= X_L)
-			{
-				J(1, 0) = C_h*Deriv_dPGH_dPG(Sg)*Deriv_dPGdSg(Sg);
-				J(1, 1) = -1.0;
-				J(1, 2) = 0.0;
-			}
-			else{
-				J(1, 0) = 0.0;
-				J(1, 1) = -1.0;
-				J(1, 2) = 0.0;
-			}
+			J(1, 0) = C_h*Deriv_dPGH_dPG(Sg)*Deriv_dPGdSg(Sg);
+			J(1, 1) = -1.0;
+			J(1, 2) = 0.0;
 
 		}
 		if (F2 <= G2) {
@@ -111,22 +103,13 @@ public:
 			J(2, 2) = 0.0;
 		}
 		else{
-			if (C_v*PG_h >= X_L)
-			{
-				J(2, 0) = -C_v*Deriv_dPGH_dPG(Sg)*Deriv_dPGdSg(Sg);
-				J(2, 1) = 0.0;
-				J(2, 2) = 1.0;
-			}
-			else{
-				J(2, 0) = 0.0;
-				J(2, 1) = 0.0;
-				J(2, 2) = 1.0;
-			}
-
+			J(2, 0) = -C_v*Deriv_dPGdSg(Sg);
+			J(2, 1) = 0.0;
+			J(2, 2) = 1.0;
 		}
 	};
+	*/
 	
-	/*
 	virtual void calc_Jacobian(ogsChem::LocalVector & vec_unknowns, ogsChem::LocalMatrix & J)
 	{
 		assert(J.cols() == this->get_n() && J.rows() == this->get_n());
@@ -148,7 +131,7 @@ public:
 		J(2, 1) = 0.0;
 		J(2, 2) = (Calc_Res_rho_G_h(Sg, rho_G_h + eps) - Calc_Res_rho_G_h(Sg, rho_G_h - eps)) / eps / 2;
 	};
-	*/
+	
 	/**
 	* based on 
 	*/
@@ -196,7 +179,9 @@ public:
 	virtual double Calc_Res_rho_L_h(double Sg, double rho_L_h)
 	{
 		double Res_rho_L_h(0.0);
-		Res_rho_L_h = std::min(Sg, -rho_L_h + get_RHO_L_H(Sg));
+		double PG = P_L + getPcbySg(Sg);
+		//Res_rho_L_h = std::min(Sg, -rho_L_h + get_RHO_L_H(Sg));
+		Res_rho_L_h = std::min(Sg, -rho_L_h + C_h*PG);
 		return Res_rho_L_h;
 	}
 	/**
@@ -417,7 +402,8 @@ public:
 		PG = getPG(sg);
 		//double PG_H(0.0);
 		//PG_H = Function_PG_h(PG);
-		rho_L_h = std::min(C_h*PG, X_L);//Henry law
+		//rho_L_h = std::min(C_h*PG, X_L);//Henry law
+		rho_L_h = C_h*PG;
 		return rho_L_h;
 	}
 	/**
@@ -489,7 +475,7 @@ public:
 		double dPGH_dPG(0.0);
 		dPGH_dPG = Deriv_dPGH_dPG(Sg);
 		double Alpha(0.0);
-		Alpha = ((C_v - C_h)*Sg + C_h)*dPGH_dPG;
+		Alpha = ((C_v - C_h)*Sg + C_h);// *dPGH_dPG;
 		return Alpha;
 	}
 	virtual double Function_Beta(double Sg)
@@ -499,7 +485,7 @@ public:
 		double Beta(0.0);
 		PG = getPG(Sg);
 		PGh = Function_PG_h(PG);
-		Beta = (C_v - C_h)*PGh;
+		Beta = (C_v - C_h)*PG;// PGh;
 		return Beta;
 	}
 
@@ -515,7 +501,7 @@ public:
 		double Gamma(0.0);
 		Gamma = getweightedFunc(Sg);
 		double dPGdSg(0.0);
-		dPGdSg = dPcdSg*(1 - Gamma) - PC*get_deriv_weight_Func(Sg);
+		dPGdSg = dPcdSg;// *(1 - Gamma) - PC*get_deriv_weight_Func(Sg);
 		//if (Sg < 1e-14)
 			//dPGdSg = 0.0;
 		return dPGdSg;
@@ -693,7 +679,7 @@ private:
 	const double C_h = 1.530e-8;// Here I define a constant value C_h which is equal to Hen*M_G(Molar mass of gas) Hen* M_G
 	const double C_v = 7.938638137741564e-07;// 7.939211048841233e-07;//M_G/RT
 	const double C_w = 3.969319068870782e-06;//M_L/RT
-	const double eps = 1e-12;
+	const double eps = 1e-10;
 	const double rho_L_std = 1000;
 	const double M_G = 0.002;
 	const double M_L = 0.01;

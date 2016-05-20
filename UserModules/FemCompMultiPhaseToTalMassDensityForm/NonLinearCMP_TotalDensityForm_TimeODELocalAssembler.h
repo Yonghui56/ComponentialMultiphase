@@ -152,7 +152,7 @@ protected:
 		Var_a = 0.0;
 		gamma_gp = 0.0;
 		isinf = 0;
-		Charact_func = 0;
+		Charact_func = 1;
 		for (j = 0; j < n_gsp; j++)
 		{
 			// calc on each gauss point
@@ -247,18 +247,25 @@ protected:
 			drho_G_hdX_gp(0) = _EOS->Deriv_drhoGh_dX(S_gp(0), InterM_gp(0));
 			dPGh_dPG_gp(0) = _EOS->Deriv_dPGH_dPG(S_gp(0));
 			dPC_dSg_gp(0) = pm->Deriv_dPCdS(S_gp(0));
+			/*
+			* Store the value
+			*/
+			_function_data->get_deriv_Sg_dX()->setIntegrationPointValue(ele_id, j, dSgdX_gp);
+			_function_data->get_deriv_Sg_dP()->setIntegrationPointValue(ele_id, j, dSgdP_gp);
 			//+++++++++++++++++++++++++End Calculation++++++++++++++++++++++++++++++++++++++++++++++
-			if (S_gp(0) <= 1e-14){
+			/*
+			if (S_gp(0) <= 0.0){
 				Charact_func = 0;
 			}
 			else
 				Charact_func = 1;
-			gamma_gp = 0;// _EOS->getweightedFunc(S_gp(0, 0));
+			*/
+			gamma_gp = 0.0;// _EOS->getweightedFunc(S_gp(0, 0));
 			//Calc each entry of the mass matrix
 			M(0, 0) = 0.0;
 			M(0, 1) = poro;
-			M(1, 0) = -poro*(rho_l_std - rho_G_w_gp(0))*dSgdP_gp(0)*Charact_func + 0 * poro* S_gp(0)*(C_w*Omega_gp(0)*Charact_func - C_w*drho_G_hdP_gp(0)*Charact_func / C_v);
-			M(1, 1) = poro*(1 - Charact_func*dSgdX_gp(0)*(rho_l_std - rho_G_w_gp(0)) + 0 * S_gp(0)*(C_w*InterM_gp(0)*Charact_func - C_w*(1 - Charact_func + drho_G_hdX_gp(0)*Charact_func) / C_v));
+			M(1, 0) = -poro*(rho_l_std)*dSgdP_gp(0);
+			M(1, 1) = poro*(1 - dSgdX_gp(0)*rho_l_std);
 			//-------------debugging------------------------
 			//std::cout << "M=" << std::endl;
 			//std::cout << M << std::endl;
@@ -295,21 +302,14 @@ protected:
 				dPC_dSg_gp(0) = dPC_dSg_gp(0);
 			}
 			Lambda_h = (rho_L_h_gp(0)*lambda_L + rho_G_h_gp(0)*lambda_G);//
-			Var_a = -rho_L_h_gp(0)*lambda_L*gamma_gp + rho_G_h_gp(0)*lambda_G*(1-gamma_gp);// RHO_L *RHO_G*lambda_L*lambda_G / (RHO_L*lambda_L + RHO_G*lambda_G);
 			//Calc each entry of the Laplace Matrix
-			D(0, 0) = poro*(1 - S_gp(0))*D_L*C_h*dPGh_dPG_gp(0)*Omega_gp(0)*Charact_func + Lambda_h + Var_a*dSgdP_gp(0)*Charact_func*dPC_dSg_gp(0);
-						//poro*(((1 - S_gp(0))*rho_L_std*D_L*C_h*dPGh_dPG_gp(0, 0)*Omega_gp(0, 0)*Charact_func) / RHO_L \
-						//+ S_gp(0, 0)*D_G*Omega_gp(0, 0)*Charact_func*(C_v*rho_G_w_gp(0, 0)*dPGh_dPG_gp(0, 0) + rho_G_h_gp(0, 0)*C_w*(dPGh_dPG_gp(0, 0) - 1)) / RHO_G \
-						//- S_gp(0, 0)*D_G*rho_G_h_gp(0, 0)*C_w*(1 - Charact_func) / RHO_G) \
-						//+ Lambda_h +Var_a*dSgdP_gp(0, 0)*Charact_func*dPC_dSg_gp(0, 0); //*(C_v - C_h)
-			D(0, 1) = poro*(1 - S_gp(0))*D_L*(1 - Charact_func + C_h*Charact_func*dPGh_dPG_gp(0)*InterM_gp(0)) + Var_a*dPC_dSg_gp(0)*dSgdX_gp(0)*Charact_func;
-						//poro*(((1 - S_gp(0, 0))*rho_L_std*D_L / RHO_L + S_gp(0, 0)*D_G*(rho_G_w_gp(0, 0) + rho_G_h_gp(0, 0)*C_w / C_v) / RHO_G)*(1 - Charact_func) \
-						//+ Charact_func*InterM_gp(0, 0)*dPGh_dPG_gp(0, 0)*((1 - S_gp(0, 0))*rho_L_std*D_L*C_h / RHO_L + S_gp(0, 0)*D_G*C_v*rho_G_w_gp(0, 0) / RHO_G) + \
-						//S_gp(0, 0)*D_G*rho_G_h_gp(0, 0)*C_w*InterM_gp(0, 0)*Charact_func*(dPGh_dPG_gp(0, 0) - 1) / RHO_G) \
-						//+ Var_a*dPC_dSg_gp(0, 0)*dSgdX_gp(0, 0)*Charact_func;//*(C_v - C_h)
+			D(0, 0) = poro*(1 - S_gp(0))*D_L*C_h*Omega_gp(0)*rho_L_std / RHO_L + Lambda_h + rho_G_h_gp(0)*lambda_G*dSgdP_gp(0)*dPC_dSg_gp(0);
+						
+			D(0, 1) = poro*(1 - S_gp(0))*D_L*(C_h*InterM_gp(0))*rho_L_std / RHO_L + rho_G_h_gp(0)*lambda_G*dPC_dSg_gp(0)*dSgdX_gp(0);
+						
 			D(1, 0) = RHO_L*lambda_L + RHO_G*lambda_G + \
-				(RHO_G*lambda_G*(1 - gamma_gp) - RHO_L*lambda_L*gamma_gp)*dPC_dSg_gp(0,0)*dSgdP_gp(0)*Charact_func;
-			D(1, 1) = (RHO_G*lambda_G*(1 - gamma_gp) - RHO_L*lambda_L*gamma_gp)*dPC_dSg_gp(0,0)*dSgdX_gp(0)*Charact_func;
+					RHO_G*lambda_G*dPC_dSg_gp(0, 0)*dSgdP_gp(0);
+			D(1, 1) = RHO_G*lambda_G*dPC_dSg_gp(0, 0)*dSgdX_gp(0);
 			//-------------debugging------------------------
 			//std::cout << "D=" << std::endl;
 			//std::cout << D << std::endl;

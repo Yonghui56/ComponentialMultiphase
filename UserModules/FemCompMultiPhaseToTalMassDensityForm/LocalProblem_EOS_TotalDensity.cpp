@@ -193,7 +193,7 @@ void LocalProblem_EOS_TotalDensity::solve_LocalProblem_Newton_LineSearch(std::si
 		{
 			flag = 0; 
 			//test for MoMaS benchmark 
-			//if (U_cur(0) < 1e-14)
+			//if (U_cur(0) < 1e-15)
 				//U_cur(0) = 0;
 			break; 
 		}
@@ -241,7 +241,7 @@ void LocalProblem_EOS_TotalDensity::solve_LocalProblem_Newton_LineSearch(std::si
 
 			// increment of unknowns
 			//U_cur = U_pre  + deltaU;
-			U_cur = U_cur  - deltaU;
+			U_cur = U_cur  + deltaU;
 
 			// evaluate residual with x_new
 			_EOS->eval(U_cur, Res);
